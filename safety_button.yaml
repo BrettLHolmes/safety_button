@@ -1,0 +1,255 @@
+version: 1
+widgets:
+  safety_button:
+    tags:
+      - Control
+      - version 1.1.5
+    props:
+      parameters:
+        - context: item
+          description: Switch item controlled by the button
+          label: Switch Item
+          name: itemSwitch
+          required: true
+          type: TEXT
+        - context: item
+          description: Item containing current power consumption
+          label: Power Item
+          name: itemPower
+          required: false
+          type: TEXT
+        - default: 5 
+          description: The Minimum Power to assume working
+          label: Minimum Power level for the Switch
+          name: itemPowerMin
+          required: false
+          type: INTEGER
+        - description: Text displayed above the button
+          label: Title
+          default: Unidentified
+          name: title
+          required: false
+          type: TEXT
+        - default: 'Safety'
+          description: The Text on the Cover
+          label: Safety Cover Text
+          name: safetyText
+          required: false
+          type: TEXT
+        - default: true
+          description: Show the lift-up safety cover
+          label: Safety Cover
+          name: safety
+          required: false
+          type: BOOLEAN
+        - default: true
+          description: Show the Icon
+          label: show the Icon 
+          name: iconVisible
+          required: false
+          type: BOOLEAN
+        - default: false
+          description: Item is tested.
+          label: The item tested by the user.
+          name: userValidated
+          required: false
+          type: BOOLEAN
+        - default: false
+          description: A device that does not have a switch (Config Only).
+          label: Config Only Device
+          name: configOnly
+          required: false
+          type: BOOLEAN
+        - default: lightbulb
+          description: Icon name
+          label: Icon Name
+          name: iconName
+          required: false
+          type: TEXT
+        - default: ""
+          description: URL for the settings page
+          label: Settings URL
+          name: settingsUrl
+          required: false
+          type: TEXT
+        - default: "40"
+          description: Size of the main icon.
+          label: Icon Size
+          name: iconSize
+          required: false
+          type: TEXT
+        - default: false
+          description: Use compact widget size
+          label: Compact Size
+          name: compact
+          required: false
+          type: BOOLEAN
+      parameterGroups: []
+    component: oh-context
+    config:
+      variables:
+        safetyOpen: false
+    slots:
+      default:
+        - component: div
+          config:
+            style:
+              width: "=props.compact ? '110px' : '180px'"
+              height: "=props.compact ? '145px' : '235px'"
+              position: relative
+              display: flex
+              flex-direction: column
+              align-items: center
+              justify-content: flex-start
+              overflow: visible
+              user-select: none
+          slots:
+            default:
+              - component: Label
+                config:
+                  text: =props.title
+                  taphold_action: url
+                  taphold_actionUrl: =props.settingsUrl
+                  style:
+                    font-size: "=props.compact ? '11px' : '18px'"
+                    font-weight: 500
+                    text-align: center
+                    width: 100%
+                    height: "=props.compact ? '20px' : '30px'"
+                    line-height: "=props.compact ? '20px' : '30px'"
+                    cursor: pointer
+                    background-color: =props.userValidated ?'transparent':'pink'
+
+              - component: oh-button
+                config:
+                  taphold_action: url
+                  taphold_actionUrl: =props.settingsUrl
+                  style:
+                    position: absolute
+                    left: "=props.compact ? '-3px' : '-7px'"
+                    top: "=props.compact ? '7px' : '12px'"
+                    width: "=props.compact ? '28px' : Number(props.iconSize) + 12 + 'px'"
+                    height: "=props.compact ? '28px' : Number(props.iconSize) + 12 + 'px'"
+                    padding: 0
+                    margin: 0
+                    background: transparent
+                    border: none
+                    border-radius: 5
+                    box-shadow: none
+                    overflow: visible
+                    min-width: 0
+                    z-index: 20
+                    cursor: pointer
+                    display: flex
+                    align-items: center
+                    justify-content: center
+                slots:
+                  default:
+                    - component: oh-icon
+                      config:
+                        visible: =props.iconVisible
+                        f7: "=props.configOnly ? 'gear' : props.iconName"
+                        height: "=props.compact ? '22' : props.iconSize"
+                        width: "=props.compact ? '22' : props.iconSize"
+                        icon: =props.iconName
+                        iconUseStateX: true
+                        item: =props.itemSwitch
+                        style:
+                          overflow: visible
+                          flex-shrink: 0
+                          color: "=props.itemPower && Number.parseFloat(items[props.itemPower].state) > props.itemPowerMin ? 'cyan' : items[props.itemSwitch].state === 'ON' ? 'green' : 'red'"
+
+              - component: div
+                config:
+                  style:
+                    position: relative
+                    width: "=props.compact ? '78px' : '130px'"
+                    height: "=props.compact ? '90px' : '150px'"
+                    perspective: 350px
+                slots:
+                  default:
+                    - component: div
+                      config:
+                        style:
+                          position: absolute
+                          width: "=props.compact ? '62px' : '108px'"
+                          height: "=props.compact ? '62px' : '108px'"
+                          left: "=props.compact ? '8px' : '11px'"
+                          top: "=props.compact ? '15px' : '25px'"
+                          border-radius: 50%
+                          background: "#333"
+                          box-shadow: 0 5px 10px rgba(0,0,0,0.55)
+
+                    - component: oh-button
+                      config:
+                        action: toggle
+                        actionItem: =props.itemSwitch
+                        actionCommand: ON
+                        actionCommandAlt: OFF
+                        icon: =props.iconName
+                        disabled: =props.safety && !vars.safetyOpen
+                        style:
+                          position: absolute
+                          width: "=props.compact ? '55px' : '96px'"
+                          height: "=props.compact ? '55px' : '96px'"
+                          left: "=props.compact ? '11px' : '17px'"
+                          top: "=props.compact ? '17px' : '27px'"
+                          border-radius: 50%
+                          border: "=props.compact ? '3px solid rgba(255,255,255,0.18)' : '5px solid rgba(255,255,255,0.18)'"
+                          background: "=props.itemPower && Number.parseFloat(items[props.itemPower].state) > props.itemPowerMin ? 'cyan' : items[props.itemSwitch].state === 'ON' ? '#19a83b' : '#d52323'"
+                          box-shadow: "=items[props.itemSwitch].state === 'ON' ? 'inset 0 4px 8px rgba(255,255,255,0.25), inset 0 -7px 10px rgba(0,0,0,0.35), 0 4px 8px rgba(0,0,0,0.45)' : 'inset 0 4px 8px rgba(255,255,255,0.22), inset 0 -7px 10px rgba(0,0,0,0.4), 0 4px 8px rgba(0,0,0,0.45)'"
+                          transition: all 0.15s ease
+                          z-index: 2
+
+                    - component: oh-button
+                      config:
+                        visible: =props.safety
+                        action: variable
+                        actionVariable: safetyOpen
+                        actionVariableValue: =!vars.safetyOpen
+                        text: "=vars.safetyOpen ? '' : props.safetyText"
+                        style:
+                          position: absolute
+                          left: "=props.compact ? '4px' : '8px'"
+                          top: "=props.compact ? '11px' : '19px'"
+                          width: "=props.compact ? '68px' : '114px'"
+                          height: "=props.compact ? '69px' : '118px'"
+                          border-radius: "=props.compact ? '10px 10px 32px 32px' : '18px 18px 55px 55px'"
+                          border: 2px solid rgba(255,255,255,0.45)
+                          background: rgba(220,235,240,0.25)
+                          backdrop-filter: blur(1px)
+                          color: rgba(255,255,255,0.9)
+                          font-size: "=props.compact ? '8px' : '13px'"
+                          font-weight: 600
+                          letter-spacing: "=props.compact ? '1px' : '2px'"
+                          box-shadow: 0 5px 12px rgba(0,0,0,0.3)
+                          transform-origin: 50% 0%
+                          transform: "=vars.safetyOpen ? 'rotateX(105deg)' : 'rotateX(0deg)'"
+                          transition: transform 0.35s ease
+                          z-index: 5
+
+                    - component: div
+                      config:
+                        visible: =props.safety
+                        style:
+                          position: absolute
+                          top: "=props.compact ? '9px' : '15px'"
+                          left: "=props.compact ? '19px' : '32px'"
+                          width: "=props.compact ? '40px' : '66px'"
+                          height: "=props.compact ? '5px' : '8px'"
+                          border-radius: 4px
+                          background: rgba(90,90,90,0.9)
+                          box-shadow: 0 2px 3px rgba(0,0,0,0.4)
+                          z-index: 6
+
+              - component: Label
+                config:
+                  visible: =!!props.itemPower
+                  text: =items[props.itemPower].displayState || items[props.itemPower].state
+                  style:
+                    margin-top: "=props.compact ? '-7px' : '-12px'"
+                    font-size: "=props.compact ? '10px' : '16px'"
+                    font-weight: 500
+                    text-align: center
+                    opacity: 0.85
+                    width: 100%
