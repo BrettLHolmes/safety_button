@@ -1,9 +1,9 @@
 version: 1
 widgets:
-  safety_button:
+  vision_safety_button:
     tags:
       - Control
-      - version 1.1.5
+      - version 1.1.6
     props:
       parameters:
         - context: item
@@ -18,19 +18,19 @@ widgets:
           name: itemPower
           required: false
           type: TEXT
-        - default: 5 
+        - default: 5
           description: The Minimum Power to assume working
           label: Minimum Power level for the Switch
           name: itemPowerMin
           required: false
           type: INTEGER
-        - description: Text displayed above the button
+        - default: Unidentified
+          description: Text displayed above the button
           label: Title
-          default: Unidentified
           name: title
           required: false
           type: TEXT
-        - default: 'Safety'
+        - default: Safety
           description: The Text on the Cover
           label: Safety Cover Text
           name: safetyText
@@ -44,7 +44,7 @@ widgets:
           type: BOOLEAN
         - default: true
           description: Show the Icon
-          label: show the Icon 
+          label: show the Icon
           name: iconVisible
           required: false
           type: BOOLEAN
@@ -119,7 +119,6 @@ widgets:
                     line-height: "=props.compact ? '20px' : '30px'"
                     cursor: pointer
                     background-color: =props.userValidated ?'transparent':'pink'
-
               - component: oh-button
                 config:
                   taphold_action: url
@@ -157,8 +156,7 @@ widgets:
                         style:
                           overflow: visible
                           flex-shrink: 0
-                          color: "=props.itemPower && Number.parseFloat(items[props.itemPower].state) > props.itemPowerMin ? 'cyan' : items[props.itemSwitch].state === 'ON' ? 'green' : 'red'"
-
+                          color: "=items[props.itemSwitch].state === 'OFF' 'red':props.itemPower && Number.parseFloat(items[props.itemPower].state) > props.itemPowerMin ? 'cyan' : 'green' "
               - component: div
                 config:
                   style:
@@ -179,7 +177,6 @@ widgets:
                           border-radius: 50%
                           background: "#333"
                           box-shadow: 0 5px 10px rgba(0,0,0,0.55)
-
                     - component: oh-button
                       config:
                         action: toggle
@@ -200,7 +197,6 @@ widgets:
                           box-shadow: "=items[props.itemSwitch].state === 'ON' ? 'inset 0 4px 8px rgba(255,255,255,0.25), inset 0 -7px 10px rgba(0,0,0,0.35), 0 4px 8px rgba(0,0,0,0.45)' : 'inset 0 4px 8px rgba(255,255,255,0.22), inset 0 -7px 10px rgba(0,0,0,0.4), 0 4px 8px rgba(0,0,0,0.45)'"
                           transition: all 0.15s ease
                           z-index: 2
-
                     - component: oh-button
                       config:
                         visible: =props.safety
@@ -227,7 +223,6 @@ widgets:
                           transform: "=vars.safetyOpen ? 'rotateX(105deg)' : 'rotateX(0deg)'"
                           transition: transform 0.35s ease
                           z-index: 5
-
                     - component: div
                       config:
                         visible: =props.safety
@@ -241,7 +236,6 @@ widgets:
                           background: rgba(90,90,90,0.9)
                           box-shadow: 0 2px 3px rgba(0,0,0,0.4)
                           z-index: 6
-
               - component: Label
                 config:
                   visible: =!!props.itemPower
@@ -253,3 +247,4 @@ widgets:
                     text-align: center
                     opacity: 0.85
                     width: 100%
+
