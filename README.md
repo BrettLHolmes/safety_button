@@ -1,2 +1,2 @@
 # safety_button
-openHAB Saftey Button Widget
+openHAB Safety Button Widget
